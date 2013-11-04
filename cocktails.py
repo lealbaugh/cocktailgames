@@ -19,7 +19,7 @@ content = "test content"
 
 client = MongoClient(os.environ['MONGOHQ_URL'])
 database = client.database	#loads or makes the database and collection, whichever should happen
-collection = client.collection
+collection = database.collection
 newcontentobject = {"position": i, "content": content}
 i = i+1
 collection.insert(newcontentobject)
