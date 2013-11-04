@@ -1,2 +1,8 @@
 Hello
-{{ message }}
+
+Here is the content we know about:
+<ul>
+{% for post in information.find() %}
+  <li>{{ post["content"] }}</li>
+{% endfor %}
+</ul>

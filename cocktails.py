@@ -2,6 +2,7 @@ from flask import *
 import twilio.twiml
 from twilio.rest import TwilioRestClient
 import os 
+from pymongo import *
 
 debug = False
 
@@ -13,13 +14,24 @@ auth_token = os.environ['AUTH_TOKEN']
 twilionumber = os.environ['TWILIO']
 mynumber = os.environ['ME']
 
+client = MongoClient(os.environ['MONGOHQ_URL'])
+
+database = client.database	#loads or makes the database and collection, whichever should happen
+collection = client.collection
+
+
 @app.route('/', methods=['GET'])
 def index():
-	return render_template("template.html")
+	return render_template("template.html", information = collection)
 
 @app.route('/twilio', methods=['POST'])
 def handle_form():
 	sendtonumber = request.form.get('From')
+	content = request.form.get('Body')
+	newcontentobject = {"position": i, "content": content}
+	collection.insert(newcontentobject)
+
+
 	print sendtonumber+"\n"
 	print twilionumber
 	try:
