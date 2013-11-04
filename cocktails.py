@@ -14,15 +14,20 @@ auth_token = os.environ['AUTH_TOKEN']
 twilionumber = os.environ['TWILIO']
 mynumber = os.environ['ME']
 
+i = 0
+content = "test content"
+
 client = MongoClient(os.environ['MONGOHQ_URL'])
 database = client.database	#loads or makes the database and collection, whichever should happen
 collection = client.collection
 newcontentobject = {"position": i, "content": content}
+i = i+1
 collection.insert(newcontentobject)
 try:
 	print "collection is ", collection
 except:
 	print "failed to print collection"	
+
 
 
 @app.route('/', methods=['GET'])
@@ -34,6 +39,7 @@ def handle_form():
 	sendtonumber = request.form.get('From')
 	content = request.form.get('Body')
 	newcontentobject = {"position": i, "content": content}
+	i = i+1
 	collection.insert(newcontentobject)
 
 
