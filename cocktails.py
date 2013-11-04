@@ -20,7 +20,8 @@ def index():
 @app.route('/', methods=['POST'])
 def handle_form():
 	sendtonumber = request.forms.get('From')
-
+	print sendtonumber+"\n"
+	print twilionumber
 	try:
 		client = TwilioRestClient(account_sid, auth_token)
 		message = client.sms.messages.create(body="sent from python!", to=sendtonumber, from_=twilionumber)
