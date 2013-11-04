@@ -19,7 +19,7 @@ def index():
 
 @app.route('/', methods=['POST'])
 def handle_form():
-	sendtonumber = request.args.get('From')
+	sendtonumber = request.forms.get('From')
 
 	try:
 		client = TwilioRestClient(account_sid, auth_token)
