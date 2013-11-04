@@ -15,9 +15,12 @@ twilionumber = os.environ['TWILIO']
 mynumber = os.environ['ME']
 
 client = MongoClient(os.environ['MONGOHQ_URL'])
-
 database = client.database	#loads or makes the database and collection, whichever should happen
 collection = client.collection
+try:
+	print "collection is ", collection
+except:
+	print "failed to print collection"	
 
 
 @app.route('/', methods=['GET'])
