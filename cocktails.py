@@ -17,6 +17,8 @@ mynumber = os.environ['ME']
 client = MongoClient(os.environ['MONGOHQ_URL'])
 database = client.database	#loads or makes the database and collection, whichever should happen
 collection = client.collection
+newcontentobject = {"position": i, "content": content}
+collection.insert(newcontentobject)
 try:
 	print "collection is ", collection
 except:
