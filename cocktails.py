@@ -20,9 +20,13 @@ def index():
 @app.route('/', methods=['POST'])
 def handle_form():
 	sendtonumber = request.args.get('From')
-	client = TwilioRestClient(account_sid, auth_token)
- 
-	message = client.sms.messages.create(body="sent from python!", to=sendtonumber, from_=twilionumber)
+
+	try:
+		client = TwilioRestClient(account_sid, auth_token)
+	 	message = client.sms.messages.create(body="sent from python!", to=sendtonumber, from_=twilionumber)
+ 	except twilio.TwilioRestException as e:
+    	print e
+
 	return render_template("template.html", message=message.sid)
 
 if __name__ == "__main__":
