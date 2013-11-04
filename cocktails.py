@@ -23,9 +23,9 @@ def handle_form():
 
 	try:
 		client = TwilioRestClient(account_sid, auth_token)
-	 	message = client.sms.messages.create(body="sent from python!", to=sendtonumber, from_=twilionumber)
+		message = client.sms.messages.create(body="sent from python!", to=sendtonumber, from_=twilionumber)
  	except twilio.TwilioRestException as e:
-    	print e
+ 		print e
 
 	return render_template("template.html", message=message.sid)
 
