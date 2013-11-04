@@ -14,12 +14,11 @@ mynumber = os.environ['ME']
 
 @app.route('/', methods=['GET'])
 def index():
-	return account_sid+", "+auth_token
-	# render_template("template.html")
+	return render_template("template.html")
 
 @app.route('/', methods=['POST'])
 def handle_form():
-	sendtonumber = request.forms.get('From')
+	sendtonumber = request.args.get('From')
 	client = TwilioRestClient(account_sid, auth_token)
  
 	message = client.sms.messages.create(body="sent from python!", to=sendtonumber, from_=twilionumber)
