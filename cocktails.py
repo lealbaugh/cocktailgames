@@ -21,9 +21,7 @@ def handle_form():
 	sendtonumber = request.forms.get('From')
 	client = TwilioRestClient(account_sid, auth_token)
  
-	message = client.sms.messages.create(body="sent from python!",
-    to=sendtonumber,    # Replace with your phone number
-    from_=twilionumber) # Replace with your Twilio number
+	message = client.sms.messages.create(body="sent from python!", to=sendtonumber, from_=twilionumber)
 	return render_template("template.html", message=message.sid)
 
 if __name__ == "__main__":
