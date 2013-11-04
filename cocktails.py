@@ -17,9 +17,9 @@ mynumber = os.environ['ME']
 def index():
 	return render_template("template.html")
 
-@app.route('/', methods=['POST'])
+@app.route('/twilio', methods=['GET'])
 def handle_form():
-	sendtonumber = request.forms.get('From')
+	sendtonumber = request.args.get('From')
 	print sendtonumber+"\n"
 	print twilionumber
 	try:
