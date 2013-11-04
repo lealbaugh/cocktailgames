@@ -14,7 +14,8 @@ mynumber = os.environ['ME']
 
 @app.route('/', methods=['GET'])
 def index():
-	return render_template("template.html")
+	return account_sid+", "+auth_token
+	# render_template("template.html")
 
 @app.route('/', methods=['POST'])
 def handle_form():
