@@ -33,10 +33,10 @@ def index():
 def handle_form():
 	sendtonumber = request.form.get('From', None)
 	content = request.form.get('Body', "empty text?")
-	return sendtonumber+"\n"+content
+
 	
-	collection.insert({"position":i, "content":content})
-	i = i+1
+	# collection.insert({"position":i, "content":content})
+	# i = i+1
 
 	try:
 		client = TwilioRestClient(account_sid, auth_token)
@@ -44,7 +44,7 @@ def handle_form():
  	except twilio.TwilioRestException as e:
  		print e
  		return e
-
+ 	return sendtonumber+"\n"+content
 	
 	# render_template("template.html", information = collection)
 
