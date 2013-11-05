@@ -5,7 +5,6 @@ import os
 from pymongo import *
 
 debug = False
-i = 0
 
 app = Flask(__name__)
 
@@ -34,13 +33,11 @@ def handle_form():
 	sendtonumber = request.form.get('From', None)
 	content = request.form.get('Body', "empty text?")
 
-	
-	collection.insert({"position":i, "content":content})
-	i = i+1
+	collection.insert({"from":sendtonumber, "content":content})
 
 	try:
 		client = TwilioRestClient(account_sid, auth_token)
-		message = client.sms.messages.create(body="sent from python!", to=sendtonumber, from_=twilionumber)
+		message = client.sms.messages.create(body="received!", to=sendtonumber, from_=twilionumber)
  	except twilio.TwilioRestException as e:
  		print e
  		return e
