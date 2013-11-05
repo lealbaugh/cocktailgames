@@ -14,19 +14,39 @@ auth_token = os.environ['AUTH_TOKEN']
 twilionumber = os.environ['TWILIO']
 mynumber = os.environ['ME']
 
+# Init twilio
+twilioclient = TwilioRestClient(account_sid, auth_token)
+
 # MongoHQ account info, also from Heroku environment variables
 mongoclientURL = os.environ['MONGOHQ_URL']
 databasename = mongoclientURL.split("/")[-1] #gets the last bit of the URL, which is the database name
 
-client = MongoClient(mongoclientURL)
-database = client[databasename]	#loads the assigned database
+# Init Mongo
+mongoclient = MongoClient(mongoclientURL)
+database = mongoclient[databasename]	#loads the assigned database
 collection = database["phonenumber"] #loads or makes the collection, whichever should happen
 
 
 
 @app.route('/', methods=['GET'])
 def index():
+	return "Sekkrits"
+
+@app.route('/leaconsole', methods=['GET'])
+def console():
 	return render_template("template.html", information = collection)
+
+@app.route('/leaconsole', methods=['POST'])
+def consolesend():
+	sendtonumber = request.form.get('To', None)
+	content = request.form.get('Body', "empty text?")
+	try:
+		message = twilioclient.sms.messages.create(body="received!", to=sendtonumber, from_=twilionumber)
+ 	except twilio.TwilioRestException as e:
+ 		print e
+ 		return e
+	return render_template("template.html", information = collection)
+
 
 @app.route('/twilio', methods=['POST'])
 def handle_form():
@@ -35,9 +55,8 @@ def handle_form():
 
 	collection.insert({"from":sendtonumber, "content":content})
 
-	try:
-		client = TwilioRestClient(account_sid, auth_token)
-		message = client.sms.messages.create(body="received!", to=sendtonumber, from_=twilionumber)
+	try:	
+		message = twilioclient.sms.messages.create(body="received!", to=sendtonumber, from_=twilionumber)
  	except twilio.TwilioRestException as e:
  		print e
  		return e
