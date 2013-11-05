@@ -9,8 +9,6 @@ debug = False
 app = Flask(__name__)
 
 i = 0
-content = "test content"
-
 
 # Twilio account info, to be gotten from Heroku environment variables
 account_sid = os.environ['ACCOUNT_SID'] 
@@ -26,13 +24,6 @@ client = MongoClient(mongoclientURL)
 database = client[databasename]	#loads the assigned database
 
 collection = database["phonenumber"] #loads or makes the collection, whichever should happen
-newcontentobject = {"position": i, "content": content}
-i = i+1
-collection.insert(newcontentobject)
-try:
-	print "collection is ", collection
-except:
-	print "failed to print collection"	
 
 
 
@@ -42,8 +33,8 @@ def index():
 
 @app.route('/twilio', methods=['POST'])
 def handle_form():
-	sendtonumber = request.form.get('From')
-	content = request.form.get('Body')
+	sendtonumber = request.form.get('From', None)
+	content = request.form.get('Body', "empty text?")
 	newcontentobject = {"position": i, "content": content}
 	i = i+1
 	collection.insert(newcontentobject)
@@ -57,7 +48,7 @@ def handle_form():
  	except twilio.TwilioRestException as e:
  		print e
 
-	return render_template("template.html", message=message.sid)
+	return render_template("template.html", information = collection)
 
 if __name__ == "__main__":
 	app.run(debug=debug)
