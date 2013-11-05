@@ -33,6 +33,7 @@ def index():
 def handle_form():
 	sendtonumber = request.form.get('From', None)
 	content = request.form.get('Body', "empty text?")
+	return sendtonumber+"\n"+content
 	
 	collection.insert({"position":i, "content":content})
 	i = i+1
@@ -44,7 +45,7 @@ def handle_form():
  		print e
  		return e
 
-	return sendtonumber+"\n"+content
+	
 	# render_template("template.html", information = collection)
 
 if __name__ == "__main__":
