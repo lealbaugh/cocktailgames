@@ -41,7 +41,7 @@ def consolesend():
 	sendtonumber = request.form.get('To', None)
 	content = request.form.get('Body', "empty text?")
 	try:
-		message = twilioclient.sms.messages.create(body="received!", to=sendtonumber, from_=twilionumber)
+		message = twilioclient.sms.messages.create(body=content, to=sendtonumber, from_=twilionumber)
  	except twilio.TwilioRestException as e:
  		print e
  		return e
