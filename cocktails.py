@@ -8,18 +8,24 @@ debug = False
 
 app = Flask(__name__)
 
+i = 0
+content = "test content"
+
+
+# Twilio account info, to be gotten from Heroku environment variables
 account_sid = os.environ['ACCOUNT_SID'] 
-# will get these numbers from Heroku, already config'd
 auth_token = os.environ['AUTH_TOKEN']
 twilionumber = os.environ['TWILIO']
 mynumber = os.environ['ME']
 
-i = 0
-content = "test content"
+# MongoHQ account info, also from Heroku environment variables
+mongoclientURL = os.environ['MONGOHQ_URL']
+databasename = mongoclientURL.split("/")[-1] #gets the last bit of the URL, which is the database name
 
-client = MongoClient(os.environ['MONGOHQ_URL'])
-database = client.database	#loads or makes the database and collection, whichever should happen
-collection = database.collection
+client = MongoClient(mongoclientURL)
+database = client.databasename	#loads the assigned database
+
+collection = database.phonenumbers #loads or makes the collection, whichever should happen
 newcontentobject = {"position": i, "content": content}
 i = i+1
 collection.insert(newcontentobject)
