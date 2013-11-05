@@ -35,8 +35,8 @@ def handle_form():
 	content = request.form.get('Body', "empty text?")
 
 	
-	# collection.insert({"position":i, "content":content})
-	# i = i+1
+	collection.insert({"position":i, "content":content})
+	 # i = i+1
 
 	try:
 		client = TwilioRestClient(account_sid, auth_token)
