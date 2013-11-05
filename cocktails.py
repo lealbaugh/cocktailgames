@@ -36,7 +36,7 @@ def handle_form():
 
 	
 	collection.insert({"position":i, "content":content})
-	 # i = i+1
+	i = i+1
 
 	try:
 		client = TwilioRestClient(account_sid, auth_token)
