@@ -23,9 +23,9 @@ mongoclientURL = os.environ['MONGOHQ_URL']
 databasename = mongoclientURL.split("/")[-1] #gets the last bit of the URL, which is the database name
 
 client = MongoClient(mongoclientURL)
-database = client.databasename	#loads the assigned database
+database = client[databasename]	#loads the assigned database
 
-collection = database.phonenumbers #loads or makes the collection, whichever should happen
+collection = database["phonenumber"] #loads or makes the collection, whichever should happen
 newcontentobject = {"position": i, "content": content}
 i = i+1
 collection.insert(newcontentobject)
