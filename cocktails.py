@@ -4,6 +4,7 @@ from twilio.rest import TwilioRestClient
 import os 
 from pymongo import *
 import datetime
+import random
 
 debug = True
 app = Flask(__name__)
@@ -28,6 +29,12 @@ transcript = database["transcript"]
 
 
 #----------Function Defs-------------------
+
+def lookup(collection, field, fieldvalue, response):
+	if response:
+		return collection.find({field:fieldvalue}, {response:1, "_id":0})[0][response] 
+	else
+		return collection.find({field:fieldvalue})
 
 def sendToRecipient(content, recipient, sender="HQ"):
 	recipientnumber = lookup(collection=players, field="agentname", fieldvalue=recipient, response="phonenumber")
@@ -54,8 +61,10 @@ def newPlayer(phonenumber, content):
 	if phonenumber == os.environ['DAVID_NUMBER']:
 		agentname = "0011"
 	else:
-		agentname = phonenumber[9:]
+		agentname = "0"+random.randint(1,99)
 	# fix this to better scramble and actually check if the agent name is taken
+		while lookup(collection=players, field="agentname", fieldvalue=agentname)
+			agentname = "0"+random.randint(1,99)
 	r = lambda: random.randint(0,255)
 	printcolor = '#%02X%02X%02X'%(r(),r(),r())
 	# random color from http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
@@ -73,14 +82,11 @@ def newPlayer(phonenumber, content):
 def getAgentName(phonenumber, content):
 	# players.find for player, based on phone number
 	# return player agent name
-	# agentname = players.find({"phonenumber":phonenumber}, {"agentname":1, "_id":0})[0]["agentname"]
 	agentname = lookup(collection=players, field="phonenumber", fieldvalue=phonenumber, response="agentname")
-	# if agentname is None:
-	# 	agentname = newPlayer(phonenumber, content)
+	if agentname is None:
+		agentname = newPlayer(phonenumber, content)
 	return agentname
 
-def lookup(collection, field, fieldvalue, response):
-	return collection.find({field:fieldvalue}, {response:1, "_id":0})[0][response] 
 
 
 #----------App routing-------------------
@@ -98,7 +104,7 @@ def consolesend():
 	tonumber = request.form.get('To', None)
 	content = request.form.get('Body', "empty text?")
 	agentname = getAgentName(tonumber, content)
-	time=0
+	time = datetime.datetime.now()
 	transcript.insert({"time":time, "sender":tonumber, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
 
 	sendToRecipient(content = "Hello, "+agentname, recipient = agentname, sender = "HQ")
