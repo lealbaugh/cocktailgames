@@ -98,7 +98,7 @@ def consolesend():
 	time=0
 	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
 
-	sendToRecipient(content = "Hello, "+agentname, recipient = agentname, sender = "HQ")
+	# sendToRecipient(content = "Hello, "+agentname, recipient = agentname, sender = "HQ")
 	return render_template("template.html", information = transcript)
 
 
