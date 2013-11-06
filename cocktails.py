@@ -63,7 +63,7 @@ def newPlayer(phonenumber, content):
 	else:
 		agentname = "0"+random.randint(1,99)
 	# fix this to better scramble and actually check if the agent name is taken
-		while lookup(collection=players, field="agentname", fieldvalue=agentname)
+		while lookup(collection=players, field="agentname", fieldvalue=agentname):
 			agentname = "0"+random.randint(1,99)
 	r = lambda: random.randint(0,255)
 	printcolor = '#%02X%02X%02X'%(r(),r(),r())
