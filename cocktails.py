@@ -61,10 +61,10 @@ def newPlayer(phonenumber, content):
 	if phonenumber == os.environ['DAVID_NUMBER']:
 		agentname = "0011"
 	else:
-		agentname = "0"+random.randint(1,99)
-	# fix this to better scramble and actually check if the agent name is taken
-		while lookup(collection=players, field="agentname", fieldvalue=agentname):
-			agentname = "0"+random.randint(1,99)
+		agentname = "0"+str(random.randint(10,99))
+		# fix this to better scramble and actually check if the agent name is taken
+		while players.find({"agentname": agentname}).count() > 0:
+			agentname = "0"+str(random.randint(10,99))
 	r = lambda: random.randint(0,255)
 	printcolor = '#%02X%02X%02X'%(r(),r(),r())
 	# random color from http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
@@ -107,7 +107,7 @@ def consolesend():
 	time = datetime.datetime.now()
 	transcript.insert({"time":time, "sender":tonumber, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
 
-	sendToRecipient(content = "Hello, "+agentname, recipient = agentname, sender = "HQ")
+	sendToRecipient(content = "Hello, Agent "+agentname, recipient = agentname, sender = "HQ")
 	return render_template("template.html", information = transcript)
 
 
@@ -119,7 +119,7 @@ def incomingSMS():
 	time = datetime.datetime.now()
 	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
 
-	sendToRecipient(content = "Hello, "+agentname, recipient = agentname, sender = "HQ")
+	sendToRecipient(content = "Hello, Agent "+agentname, recipient = agentname, sender = "HQ")
  	
  	return "Success"
 
