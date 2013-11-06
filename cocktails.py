@@ -45,8 +45,7 @@ def sendToRecipient(content, recipient, sender="HQ"):
  	except twilio.TwilioRestException as e:
  		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "color":"#008080", "error":e})
 
-def lookup(collection, field, fieldvalue, response):
-	return collection.find({field:fieldvalue}, {response:1, "_id":0})[0][response] 
+
 
 def newPlayer(phonenumber, content):
 	# generate agent name
@@ -73,11 +72,14 @@ def newPlayer(phonenumber, content):
 def getAgentName(phonenumber, content):
 	# players.find for player, based on phone number
 	# return player agent name
-	agentname = players.find({"phonenumber":phonenumber}, {"agentname":1, "_id":0})[0]["agentname"]
-	# agentname = lookup(collection=players, field="phonenumber", fieldvalue=phonenumber, response=agentname)
+	# agentname = players.find({"phonenumber":phonenumber}, {"agentname":1, "_id":0})[0]["agentname"]
+	agentname = lookup(collection=players, field="phonenumber", fieldvalue=phonenumber, response="agentname")
 	# if agentname is None:
 	# 	agentname = newPlayer(phonenumber, content)
 	return agentname
+
+def lookup(collection, field, fieldvalue, response):
+	return collection.find({field:fieldvalue}, {response:1, "_id":0})[0][response] 
 
 
 #----------App routing-------------------
