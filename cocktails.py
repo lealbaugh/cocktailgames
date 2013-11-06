@@ -92,9 +92,9 @@ def console():
 
 @app.route('/leaconsole', methods=['POST'])
 def consolesend():
-	fromnumber = request.form.get('From', None)
+	tonumber = request.form.get('To', None)
 	content = request.form.get('Body', "empty text?")
-	agentname = getAgentName(fromnumber, content)
+	agentname = getAgentName(toumber, content)
 	time=0
 	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
 
