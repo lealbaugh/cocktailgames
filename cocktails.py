@@ -74,7 +74,7 @@ def getAgentName(phonenumber, content):
 	# players.find for player, based on phone number
 	# return player agent name
 	# agentname = players.find({"phonenumber":phonenumber}, {"agentname":1, "_id":0})[0]["agentname"]
-	lookup(collection=players, field="phonenumber", fieldvalue=phonenumber, response=agentname)
+	agentname = lookup(collection=players, field="phonenumber", fieldvalue=phonenumber, response=agentname)
 	if agentname is None:
 		agentname = newPlayer(phonenumber, content)
 	return agentname
