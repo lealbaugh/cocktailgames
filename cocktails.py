@@ -92,25 +92,25 @@ def console():
 
 @app.route('/leaconsole', methods=['POST'])
 def consolesend():
-	sendtonumber = request.form.get('To', None)
+	fromnumber = request.form.get('From', None)
 	content = request.form.get('Body', "empty text?")
-	try:
-		message = twilioclient.sms.messages.create(body=content, to=sendtonumber, from_=twilionumber)
- 	except twilio.TwilioRestException as e:
- 		print e
- 		return e
+	agentname = getAgentName(fromnumber, content)
+	time=0
+	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
+
+	sendToRecipient(content = "Hello, "+agentname, recipient = agentname, sender = "HQ")
 	return render_template("template.html", information = transcript)
 
 
 @app.route('/twilio', methods=['POST'])
 def incomingSMS():
-	phonenumber = request.form.get('From', None)
+	fromnumber = request.form.get('From', None)
 	content = request.form.get('Body', "empty text?")
-	agent = getAgentName(phonenumber, content)
+	agentname = getAgentName(fromnumber, content)
 	time=0
-	transcript.insert({"time":time, "sender":agent, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
+	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
 
-	sendToRecipient(content = "Hello, "+agent, recipient = agent, sender = "HQ")
+	sendToRecipient(content = "Hello, "+agentname, recipient = agentname, sender = "HQ")
  	
  	return "Success"
 
