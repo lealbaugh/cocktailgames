@@ -41,9 +41,9 @@ def sendToRecipient(content, recipient, sender="HQ"):
 	time = 0 #function here to return time
 	try:
 		message = twilioclient.sms.messages.create(body=content, to=recipientnumber, from_=sendernumber)
-		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "color":printcolor, "error":"no"})
+		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "color":"#008080", "error":"no"})
  	except twilio.TwilioRestException as e:
- 		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "color":printcolor, "error":e})
+ 		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "color":"#008080", "error":e})
 
 def lookup(collection, field, fieldvalue, response):
 	return collection.find({field:fieldvalue}, {response:1, "_id":0})[0][response] 
