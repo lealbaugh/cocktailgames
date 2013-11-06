@@ -94,9 +94,9 @@ def console():
 def consolesend():
 	tonumber = request.form.get('To', None)
 	content = request.form.get('Body', "empty text?")
-	agentname = getAgentName(toumber, content)
+	# agentname = getAgentName(toumber, content)
 	time=0
-	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
+	transcript.insert({"time":time, "sender":tonumber, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
 
 	# sendToRecipient(content = "Hello, "+agentname, recipient = agentname, sender = "HQ")
 	return render_template("template.html", information = transcript)
