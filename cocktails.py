@@ -82,7 +82,7 @@ def newPlayer(phonenumber, content):
 def getAgentName(phonenumber, content):
 	# players.find for player, based on phone number
 	# return player agent name
-	if players.find({"agentname": agentname}).count() = 0:
+	if players.find({"agentname": agentname}).count() == 0:
 		agentname = newPlayer(phonenumber, content)
 	agentname = lookup(collection=players, field="phonenumber", fieldvalue=phonenumber, response="agentname")
 	return agentname
