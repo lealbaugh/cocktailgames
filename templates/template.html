@@ -1,7 +1,7 @@
 Here are all of the messages:
 <ul>
 {% for post in information.find() %}
-  <li><style="color:{{ post.color }}">{{ post["content"] }}</style></li>
+  <li style="color:{{ post.color }}">{{ post["content"] }}</li>
 {% endfor %}
 </ul>
 
