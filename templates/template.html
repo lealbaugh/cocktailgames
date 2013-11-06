@@ -1,12 +1,14 @@
-Here are all of the messages:
-<ul>
-{% for post in information.find() %}
-  <li style="color:{{ post.color }}">{{ post["content"] }}</li>
-{% endfor %}
-</ul>
-
 <form action="/leaconsole" method="post">
 To: <input type="text" name="To" />
 Content: <input type="text" name="Body" />
 <input type="submit">
 </form>
+<hr>
+Transcript:
+<ul style="list-style-type:none">
+{% for post in information.find() %}
+  <li style="color:{{ post.color }}">{{ post["content"] }}</li>
+{% endfor %}
+</ul>
+
+

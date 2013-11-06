@@ -29,14 +29,14 @@ transcript = database["transcript"]
 #----------Function Defs-------------------
 
 def sendToRecipient(content, recipient, sender="HQ"):
-	# recipientnumber = lookup(collection=players, field=agentname, fieldvalue=recipient, response=phonenumber)
-	recipientnumber = players.find({"agentname":recipient}, {"phonenumber":1, "_id":0})[0]["phonenumber"] 
+	recipientnumber = lookup(collection=players, field="agentname", fieldvalue=recipient, response=phonenumber)
+	# recipientnumber = players.find({"agentname":recipient}, {"phonenumber":1, "_id":0})[0]["phonenumber"] 
 	#theory: "find" returns an array of objects; the first one ought to be the one we want
 	if sender == "HQ":
 		sendernumber = twilionumber
 	else:
-		# sendernumber = lookup(collection=players, field=agentname, fieldvalue=sender, response=phonenumber)
-		sendernumber = players.find({"agentname":sender}, {"phonenumber":1, "_id":0})[0]["phonenumber"]
+		sendernumber = lookup(collection=players, field="agentname", fieldvalue=sender, response=phonenumber)
+		# sendernumber = players.find({"agentname":sender}, {"phonenumber":1, "_id":0})[0]["phonenumber"]
 
 	time = 0 #function here to return time
 	try:
@@ -73,7 +73,8 @@ def newPlayer(phonenumber, content):
 def getAgentName(phonenumber, content):
 	# players.find for player, based on phone number
 	# return player agent name
-	agentname = players.find({"phonenumber":phonenumber}, {"agentname":1, "_id":0})[0]["agentname"]
+	# agentname = players.find({"phonenumber":phonenumber}, {"agentname":1, "_id":0})[0]["agentname"]
+	lookup(collection=players, field="phonenumber", fieldvalue=phonenumber, response=agentname)
 	if agentname is None:
 		agentname = newPlayer(phonenumber, content)
 	return agentname
@@ -106,6 +107,8 @@ def incomingSMS():
 	phonenumber = request.form.get('From', None)
 	content = request.form.get('Body', "empty text?")
 	agent = getAgentName(phonenumber, content)
+	time=0
+	transcript.insert({"time":time, "sender":agent, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
 
 	sendToRecipient(content = "Hello, "+agent, recipient = agent, sender = "HQ")
  	
