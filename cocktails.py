@@ -33,7 +33,7 @@ transcript = database["transcript"]
 def lookup(collection, field, fieldvalue, response):
 	if response:
 		return collection.find({field:fieldvalue}, {response:1, "_id":0})[0][response] 
-	else
+	else:
 		return collection.find({field:fieldvalue})
 
 def sendToRecipient(content, recipient, sender="HQ"):
