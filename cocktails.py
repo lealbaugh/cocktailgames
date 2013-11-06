@@ -3,6 +3,7 @@ import twilio.twiml
 from twilio.rest import TwilioRestClient
 import os 
 from pymongo import *
+import datetime
 
 debug = True
 app = Flask(__name__)
@@ -38,7 +39,7 @@ def sendToRecipient(content, recipient, sender="HQ"):
 		sendernumber = lookup(collection=players, field="agentname", fieldvalue=sender, response="phonenumber")
 		# sendernumber = players.find({"agentname":sender}, {"phonenumber":1, "_id":0})[0]["phonenumber"]
 
-	time = 0 #function here to return time
+	time = datetime.datetime.now() #function here to return time
 	try:
 		message = twilioclient.sms.messages.create(body=content, to=recipientnumber, from_=sendernumber)
 		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "color":"#008080", "error":"no"})
@@ -109,7 +110,7 @@ def incomingSMS():
 	fromnumber = request.form.get('From', None)
 	content = request.form.get('Body', "empty text?")
 	agentname = getAgentName(fromnumber, content)
-	time=0
+	time = datetime.datetime.now()
 	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
 
 	sendToRecipient(content = "Hello, "+agentname, recipient = agentname, sender = "HQ")
