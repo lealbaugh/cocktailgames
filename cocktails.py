@@ -29,22 +29,24 @@ transcript = database["transcript"]
 #----------Function Defs-------------------
 
 def sendToRecipient(content, recipient, sender="HQ"):
-	recipientnumber = players.find({"agentname":recipient}, {"phonenumber":1, "_id":0})[0]["phonenumber"] 
+	recipientnumber = lookup(collection=players, field=agentname, fieldvalue=recipient, response=phonenumber)
+	# players.find({"agentname":recipient}, {"phonenumber":1, "_id":0})[0]["phonenumber"] 
 	#theory: "find" returns an array of objects; the first one ought to be the one we want
 	if sender == "HQ":
 		sendernumber = twilionumber
 	else:
-		sendernumber = players.find({"agentname":sender}, {"phonenumber":1, "_id":0})[0]["phonenumber"]
+		sendernumber = lookup(collection=players, field=agentname, fieldvalue=sender, response=phonenumber)
+	# players.find({"agentname":sender}, {"phonenumber":1, "_id":0})[0]["phonenumber"]
 
 	time = 0 #function here to return time
-	transcript.insert({"time":time, "recipient":recipient, "sender":sender, "content":content})
-	
 	try:
 		message = twilioclient.sms.messages.create(body=content, to=recipientnumber, from_=sendernumber)
-		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "error":"no"})
+		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "color":printcolor, "error":"no"})
  	except twilio.TwilioRestException as e:
- 		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "error":e})
+ 		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "color":printcolor, "error":e})
 
+def lookup(collection, field, fieldvalue, response):
+	return collection.find({field:fieldvalue}, {response:1, "_id":0})[0][response] 
 
 def newPlayer(phonenumber, content):
 	# generate agent name
