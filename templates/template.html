@@ -7,7 +7,7 @@ Content: <input type="text" name="Body" />
 Transcript:
 <ul style="list-style-type:none">
 {% for post in information.find() %}
-  <li style="color:{{ post.color }}">{{ post.sender }} to {{ post.recipient }} @{{ str(post.time)[11:16] }}: {{ post["content"] }}</li>
+  <li style="color:{{ post.color }}">{{ post.time|timeToString }}{{ post.sender }} to {{ post.recipient }} @{{ time }}: {{ post["content"] }}</li>
 {% endfor %}
 </ul>
 

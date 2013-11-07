@@ -53,6 +53,7 @@ def sendToRecipient(content, recipient, sender="HQ"):
 
 
 
+
 def newPlayer(phonenumber, content):
 	# generate agent name
 	# add name, agent, init points, etc to players collection
@@ -155,6 +156,13 @@ def incomingSMS():
 
 
 	return "Success"
+
+
+#----------Jinja filter-----------------
+@app.template_filter('printtime')
+def timeToString(timestamp):
+    return str(post.time)[11:16]
+
 
 
 #-----------Run it!----------------------
