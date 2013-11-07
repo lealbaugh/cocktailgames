@@ -111,6 +111,7 @@ def gameLogic(agentname, content):
 	endmatch = re.match("end", content.lower())
 # if first word is digits of an agent name, forward the message
 	if agentnamematch:
+		print "agentnamematch!"
 		recipient = agentnamematch.group(0)
 		if players.find({"agentname": recipient}).count() == 0:
 			sendToRecipient(content = "There is no such agent.", recipient = agentname, sender = "HQ")
@@ -119,6 +120,7 @@ def gameLogic(agentname, content):
 			sendToRecipient(content = content, recipient = recipient, sender = agentname)
 			print "Direct message to "+recipient+": "+content
 	elif helpmatch:
+		print "helpmatch!"
 		helptext = ""
 		# if we are in directmessaging:
 		helptext = helptext+"To message another agent, use \"[their number]: [message]\"\n"
@@ -129,6 +131,8 @@ def gameLogic(agentname, content):
 		retireAgent(agentname)
 # if the content is an intel word, figure out whose intel words they could be and answer with that
 	elif reportmatch:
+		print "reportmatch!"
+		print content
 		textinput = re.sub("report:\s*", "", content.lower())
 		textinput = re.sub("[^a-z\s]", "", textinput)
 		# convert input to lower, strip out punctuation and numbers
@@ -137,7 +141,7 @@ def gameLogic(agentname, content):
 		for player in agentNamesAndTasks:
 			for word in player.tasks:
 				print word
-				if word == content:
+				if word == textinput:
 					potentialagents.add(player.agentname)
 					print player.agentname
 		print potentialagents
