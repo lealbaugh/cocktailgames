@@ -95,12 +95,20 @@ def greet(agentname):
 
 def assignWords(collection):
 	pass
+	# set player's tasks to a list of words and send them intro message
+
+
+def retireAgent(agentname):
+	pass
+	# set player's Active to false and send goodbye message
 
 def gameLogic(agentname, content):
 	print "gamelogic!"
 # if the content begins with a number, route the content through to the other agent
 	agentnamematch = re.match("\d{3,4}", content)
 	helpmatch = re.match("help", content)
+	reportmatch = re.match("report", content.lower())
+# if first word is digits of an agent name, forward the message
 	if agentnamematch:
 		recipient = agentnamematch.group(0)
 		if players.find({"agentname": recipient}).count() == 0:
@@ -109,6 +117,33 @@ def gameLogic(agentname, content):
 			content = re.sub("\d{3,4}", "From "+agentname, content)
 			sendToRecipient(content = content, recipient = recipient, sender = agentname)
 			print "Direct message to "+recipient+": "+content
+	elif helpmatch:
+		helptext = ""
+		# if we are in directmessaging:
+		helptext = helptext+"To message another agent, use \"[their number]: [message]\"\n"
+		# if we are in reporting:
+		helptext = helptext+"To report a piece of intelligence, txt \"report: [the word]\""
+		sendToRecipient(content = helptext, recipient = agentname, sender = "HQ")
+	elif endmatch:
+		retireAgent(agentname)
+
+# if the content is an intel word, figure out whose intel words they could be and answer with that
+	elif reportmatch:
+		textinput = re.sub("report:\s*", "", content.lower())
+		textinput = re.sub("[^a-z\s]", "", textinput)
+		# convert input to lower, strip out punctuation and numbers
+		agentNamesAndTasks = players.find({"active":True}, {"agentname":1, "tasks":1 "_id":0}) 
+		potentialagents = []
+		for player in agentNamesAndTasks:
+			for word in player.tasks:
+				if word == content:
+					potentialagents.add(player.agentname)
+		if len(potentialagents) > 0:
+			message = "Our records show that the observed agent could be Agent "+potentialagents.join(" or ")+"."
+		else:
+			message = "Our records do not show evidence of any such intelligence."
+		sendToRecipient(content = message, recipient=agentname, sender = "HQ")
+
 	else:
 		print "didn't match"
 		pass
