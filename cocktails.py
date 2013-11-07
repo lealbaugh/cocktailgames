@@ -140,9 +140,9 @@ def gameLogic(agentname, content):
 		print agentNamesAndTasks
 		potentialagents = []
 		for player in agentNamesAndTasks:
-		for word in player["tasks"]:
-			if word == textinput:
-				potentialagents.append(player["agentname"])
+			for word in player["tasks"]:
+				if word == textinput:
+					potentialagents.append(player["agentname"])
 		print potentialagents
 		if len(potentialagents) > 0:
 			message = "Our records show that the observed agent could be Agent "+" or Agent ".join(potentialagents)+"."
