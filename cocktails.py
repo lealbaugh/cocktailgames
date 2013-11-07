@@ -108,8 +108,6 @@ def gameLogic(agentname, content):
 	agentnamematch = re.match("\d{3,4}", content)
 	helpmatch = re.match("help", content)
 	reportmatch = re.match("report", content.lower())
-	print reportmatch
-	
 # if first word is digits of an agent name, forward the message
 	if agentnamematch:
 		recipient = agentnamematch.group(0)
@@ -138,8 +136,10 @@ def gameLogic(agentname, content):
 		potentialagents = []
 		for player in agentNamesAndTasks:
 			for word in player.tasks:
+				print word
 				if word == content:
 					potentialagents.add(player.agentname)
+					print player.agentname
 		print potentialagents
 		print len(potentialagents)
 		if len(potentialagents) > 0:
