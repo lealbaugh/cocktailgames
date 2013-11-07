@@ -104,7 +104,7 @@ def gameLogic(agentname, content):
 		recipient = potentialmatch.group(0)
 		print "direct message to "+recipient
 		content = re.sub("\d{3,4}", "From "+agentname, content)
-		# sendToRecipient(content = content, recipient = recipient, sender = agentname)
+		sendToRecipient(content = content, recipient = recipient, sender = agentname)
 		print "fakesent|"+content+" to "+recipient
 	else:
 		print "didn't match"
