@@ -38,7 +38,7 @@ def lookup(collection, field, fieldvalue, response):
 
 def sendToRecipient(content, recipient, sender="HQ"):
 	recipientnumber = lookup(collection=players, field="agentname", fieldvalue=recipient, response="phonenumber")
-	recipientcolor = lookup(collection=players, field="agentname", fieldvalue=recipient, response="color")
+	recipientcolor = lookup(collection=players, field="agentname", fieldvalue=recipient, response="printcolor")
 	# recipientnumber = players.find({"agentname":recipient}, {"phonenumber":1, "_id":0})[0]["phonenumber"] 
 	#theory: "find" returns an array of objects; the first one ought to be the one we want
 	if sender == "HQ":
