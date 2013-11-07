@@ -42,13 +42,9 @@ def sendToRecipient(content, recipient, sender="HQ"):
 	recipientcolor = lookup(collection=players, field="agentname", fieldvalue=recipient, response="printcolor")
 	# recipientnumber = players.find({"agentname":recipient}, {"phonenumber":1, "_id":0})[0]["phonenumber"] 
 	#theory: "find" returns an array of objects; the first one ought to be the one we want
-	if sender == "HQ":
-		sendernumber = twilionumber
-	else:
-		sendernumber = lookup(collection=players, field="agentname", fieldvalue=sender, response="phonenumber")
-		# sendernumber = players.find({"agentname":sender}, {"phonenumber":1, "_id":0})[0]["phonenumber"]
-
+	sendernumber = twilionumber
 	time = datetime.datetime.now() #function here to return time
+	
 	try:
 		message = twilioclient.sms.messages.create(body=content, to=recipientnumber, from_=twilionumber)
 		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "color":recipientcolor, "error":"no"})
@@ -96,15 +92,22 @@ def getAgentName(phonenumber, content):
 def greet(agentname):
 	sendToRecipient(content = "Hello, Agent "+agentname+"! Your skills will be vital to the success of this event. To abandon the event before its completion, txt \"end.\" Await further instruction.", recipient = agentname, sender = "HQ")
 
+def assignWords(collection):
+	pass
 
 def gameLogic(agentname, content):
 	print "gamelogic!"
-	potentialmatch = re.match("\d{3,4}", content)
-	if potentialmatch:
-		recipient = potentialmatch.group(0)
-		content = re.sub("\d{3,4}", "From "+agentname, content)
-		sendToRecipient(content = content, recipient = recipient, sender = agentname)
-		print "Direct message to "+recipient+": "+content
+# if the content begins with a number, route the content through to the other agent
+	agentnamematch = re.match("\d{3,4}", content)
+	helpmatch = re.match(, content)
+	if agentnamematch:
+		recipient = agentnamematch.group(0)
+		if players.find({"agentname": recipient}).count() == 0:
+			sendToRecipient(content = "There is no such agent.", recipient = agentname, sender = "HQ")
+		else:
+			content = re.sub("\d{3,4}", "From "+agentname, content)
+			sendToRecipient(content = content, recipient = recipient, sender = agentname)
+			print "Direct message to "+recipient+": "+content
 	else:
 		print "didn't match"
 		pass
@@ -114,7 +117,7 @@ def gameLogic(agentname, content):
 # when the "assign words" trigger is pulled, each player is assigned two words to slip into a conversation
 # and warned that enemy agents are also using code words
 # 
-# if the content begins with a number, route that number through to the other agent
+
 # 	
 	
 
