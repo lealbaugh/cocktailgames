@@ -123,7 +123,7 @@ def incomingSMS():
 	agentcolor = lookup(collection=players, field="agentname", fieldvalue=agentname, response="color")
 	print "color: "+agentcolor
 	time = datetime.datetime.now()
-	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":agentcolor, "error":"no"})
+	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "printcolor":agentcolor, "error":"no"})
 
 	sendToRecipient(content = "Hello, Agent "+agentname, recipient = agentname, sender = "HQ")
  	
