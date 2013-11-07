@@ -97,7 +97,22 @@ def greet(agentname):
 
 
 def gameLogic(agentname, content):
-	pass
+	if content.match("\b\d{3,4}"):
+		recipient = content.match("\b\d{3,4}").group[0]
+		content = content.sub("\b\d{3,4}", "From "+agentname)
+		sendToRecipient(content = content, recipient = recipient, sender = agentname)
+
+	else:
+		pass
+
+# if the content is an intel word, figure out whose intel words they could be and answer with that
+# 
+# when the "assign words" trigger is pulled, each player is assigned two words to slip into a conversation
+# and warned that enemy agents are also using code words
+# 
+# if the content begins with a number, route that number through to the other agent
+# 	
+	
 
 
 #----------App routing-------------------
