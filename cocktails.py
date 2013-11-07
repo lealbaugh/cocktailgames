@@ -92,8 +92,12 @@ def getAgentName(phonenumber, content):
 	return agentname
 
 
-def greet(agentname)
+def greet(agentname):
 	sendToRecipient(content = "Hello, Agent "+agentname+"! Your skills will be vital to the success of this event. To abandon the event before its completion, txt \"end.\" Await further instruction.", recipient = agentname, sender = "HQ")
+
+
+def gameLogic(agentname, content):
+	pass
 
 
 #----------App routing-------------------
@@ -125,7 +129,7 @@ def incomingSMS():
 	time = datetime.datetime.now()
 	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":agentcolor, "error":"no"})
 
-	gamelogic(agentname, content)
+	gameLogic(agentname, content)
 
 
 	return "Success"
