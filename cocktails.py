@@ -98,10 +98,11 @@ def greet(agentname):
 
 def gameLogic(agentname, content):
 	if content.match("\b\d{3,4}"):
+		print "direct message"
 		recipient = content.match("\b\d{3,4}").group[0]
 		content = content.sub("\b\d{3,4}", "From "+agentname)
 		sendToRecipient(content = content, recipient = recipient, sender = agentname)
-
+		print "sent "+content+" to "+recipient
 	else:
 		pass
 
