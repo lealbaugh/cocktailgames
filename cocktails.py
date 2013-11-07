@@ -161,7 +161,7 @@ def incomingSMS():
 #----------Jinja filter-----------------
 @app.template_filter('printtime')
 def timeToString(timestamp):
-    return str(post.time)[11:16]
+    return str(timestamp)[11:16]
 
 
 
