@@ -108,6 +108,7 @@ def gameLogic(agentname, content):
 	agentnamematch = re.match("\d{3,4}", content)
 	helpmatch = re.match("help", content)
 	reportmatch = re.match("report", content.lower())
+	endmatch = re.match("end", content.lower())
 # if first word is digits of an agent name, forward the message
 	if agentnamematch:
 		recipient = agentnamematch.group(0)
@@ -126,7 +127,6 @@ def gameLogic(agentname, content):
 		sendToRecipient(content = helptext, recipient = agentname, sender = "HQ")
 	elif endmatch:
 		retireAgent(agentname)
-
 # if the content is an intel word, figure out whose intel words they could be and answer with that
 	elif reportmatch:
 		textinput = re.sub("report:\s*", "", content.lower())
