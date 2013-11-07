@@ -99,9 +99,9 @@ def greet(agentname):
 
 def gameLogic(agentname, content):
 	print "gamelogic!"
-	if re.match("\d{3,4}", content):
+	recipient = re.match("\d{3,4}", content).group(0)
+	if recipient:
 		print "direct message"
-		recipient = re.match("\d{3,4}", content).group[0]
 		content = re.sub("\d{3,4}", "From "+agentname, content)
 		sendToRecipient(content = content, recipient = recipient, sender = agentname)
 		print "sent "+content+" to "+recipient
