@@ -132,7 +132,7 @@ def gameLogic(agentname, content):
 		textinput = re.sub("report:\s*", "", content.lower())
 		textinput = re.sub("[^a-z\s]", "", textinput)
 		# convert input to lower, strip out punctuation and numbers
-		agentNamesAndTasks = players.find({"active":"True"}, {"agentname":1, "tasks":1 "_id":0}) 
+		agentNamesAndTasks = players.find({"active":"True"}, {"agentname":1, "tasks":1, "_id":0}) 
 		potentialagents = []
 		for player in agentNamesAndTasks:
 			for word in player.tasks:
