@@ -132,11 +132,12 @@ def gameLogic(agentname, content):
 # if the content is an intel word, figure out whose intel words they could be and answer with that
 	elif reportmatch:
 		print "reportmatch!"
-		print content
 		textinput = re.sub("report:\s*", "", content.lower())
 		textinput = re.sub("[^a-z\s]", "", textinput)
+		print "input: "+textinput
 		# convert input to lower, strip out punctuation and numbers
 		agentNamesAndTasks = players.find({"active":"True"}, {"agentname":1, "tasks":1, "_id":0}) 
+		print agentNamesAndTasks
 		potentialagents = []
 		for player in agentNamesAndTasks:
 			for word in player.tasks:
