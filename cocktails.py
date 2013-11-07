@@ -119,8 +119,9 @@ def incomingSMS():
 	fromnumber = request.form.get('From', None)
 	content = request.form.get('Body', "empty text?")
 	agentname = getAgentName(fromnumber, content)
+	agentcolor = lookup(collection=players, field="agentname", fieldvalue=agentname, response="color")
 	time = datetime.datetime.now()
-	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
+	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":agentcolor, "error":"no"})
 
 	sendToRecipient(content = "Hello, Agent "+agentname, recipient = agentname, sender = "HQ")
  	
