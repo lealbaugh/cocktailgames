@@ -6,7 +6,7 @@ from pymongo import *
 import datetime
 import random
 
-debug = True
+debug = False
 app = Flask(__name__)
 
 # Twilio account info, to be gotten from Heroku environment variables
@@ -78,6 +78,7 @@ def newPlayer(phonenumber, content):
 		"printcolor": printcolor,
 		"phonenumber": phonenumber
 		})
+	greet(agentname)
 	return agentname
 
 
@@ -91,6 +92,9 @@ def getAgentName(phonenumber, content):
 	return agentname
 
 
+def greet(agentname)
+	sendToRecipient(content = "Hello, Agent "+agentname+"! Your skills will be vital to the success of this event. To abandon the event before its completion, txt \"end.\" Await further instruction.", recipient = agentname, sender = "HQ")
+
 
 #----------App routing-------------------
 
@@ -103,14 +107,12 @@ def console():
 	return render_template("template.html", information = transcript)
 
 @app.route('/leaconsole', methods=['POST'])
-def consolesend():
-	tonumber = request.form.get('To', None)
+def consoleSend():
+	agentname = request.form.get('To', None)
 	content = request.form.get('Body', "empty text?")
-	agentname = getAgentName(tonumber, content)
-	time = datetime.datetime.now()
-	transcript.insert({"time":time, "sender":tonumber, "recipient":"HQ", "content":content, "color":"#000000", "error":"no"})
+	
+	sendToRecipient(content = content, recipient = agentname, sender = "HQ")
 
-	sendToRecipient(content = "Hello, Agent "+agentname, recipient = agentname, sender = "HQ")
 	return render_template("template.html", information = transcript)
 
 
@@ -119,15 +121,14 @@ def incomingSMS():
 	fromnumber = request.form.get('From', None)
 	content = request.form.get('Body', "empty text?")
 	agentname = getAgentName(fromnumber, content)
-	print "name: "+agentname
 	agentcolor = lookup(collection=players, field="agentname", fieldvalue=agentname, response="printcolor")
-	print "color: "+agentcolor
 	time = datetime.datetime.now()
 	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":agentcolor, "error":"no"})
 
-	sendToRecipient(content = "Hello, Agent "+agentname, recipient = agentname, sender = "HQ")
- 	
- 	return "Success"
+	gamelogic(agentname, content)
+
+
+	return "Success"
 
 
 #-----------Run it!----------------------
