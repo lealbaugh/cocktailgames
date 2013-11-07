@@ -101,8 +101,8 @@ def gameLogic(agentname, content):
 	print "gamelogic!"
 	recipient = re.match("\d{3,4}", content).group(0)
 	if recipient:
-		print "direct message to"+recipient
-		content = re.sub("\d{3,4}", "From "+agentname, content)
+		print "direct message to "+recipient
+		# content = re.sub("\d{3,4}", "From "+agentname, content)
 		sendToRecipient(content = content, recipient = recipient, sender = agentname)
 		print "sent "+content+" to "+recipient
 	else:
