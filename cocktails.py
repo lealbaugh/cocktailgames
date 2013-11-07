@@ -97,6 +97,7 @@ def greet(agentname):
 
 
 def gameLogic(agentname, content):
+	print "gamelogic!"
 	if content.match("\b\d{3,4}"):
 		print "direct message"
 		recipient = content.match("\b\d{3,4}").group[0]
@@ -104,6 +105,7 @@ def gameLogic(agentname, content):
 		sendToRecipient(content = content, recipient = recipient, sender = agentname)
 		print "sent "+content+" to "+recipient
 	else:
+		print "didn't match"
 		pass
 
 # if the content is an intel word, figure out whose intel words they could be and answer with that
