@@ -1,4 +1,4 @@
-<table border=0>
+<table border=0 padding=10px>
 	<tr>
 		<td>Agent #</td>
 		<td>Successful Transmits</td>
@@ -17,4 +17,7 @@
 {% endfor %}
 </table>
 <hr>
-
+		<td>{{ players.successfulTransmits|length }}</td>
+		<td>{{ players.interceptedTransmits|length }}</td>
+		<td>{{ players.reportedEnemies|length }}</td>
+		<td>{{ players.spuriousReports|length }}</td>
