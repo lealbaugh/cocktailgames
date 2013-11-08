@@ -9,12 +9,13 @@
 {% for player in players.find() %}
 	<tr>
 		<td>{{ players.agentname }}</td>
-		<td>{{ players.successfulTransmits }}</td>
-		<td>{{ players.interceptedTransmits }}</td>
-		<td>{{ players.reportedEnemies }}</td>
-		<td>{{ players.spuriousReports }}</td>
+		<td>{{ players.successfulTransmits|length }}</td>
+		<td>{{ players.interceptedTransmits|length }}</td>
+		<td>{{ players.reportedEnemies|length }}</td>
+		<td>{{ players.spuriousReports|length }}</td>
 	</tr>
 {% endfor %}
 </table>
-
+<hr>
+Spurious reports:<br> {{ game.spuriousReports }}
 

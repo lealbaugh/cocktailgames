@@ -213,7 +213,8 @@ def index():
 
 @app.route('/leaderboard', methods=['GET'])
 def console():
-	return render_template("leaderboard.html", players = players)
+	game = lookup(games, "active", "True", "spuriousReports")
+	return render_template("leaderboard.html", players = players, game = game)
 
 @app.route('/leaconsole', methods=['GET'])
 def console():
