@@ -238,7 +238,7 @@ def consoleSend():
 	content = request.form.get('Body', "empty text?")
 	sendToRecipient(content = content, recipient = agentname, sender = "HQ")
 
-	return render_template("<a href=\"/leaconsole\">back</a>")
+	return "<a href=\"/leaconsole\">back</a>"
 
 @app.route('/leaconsole/sentcommand', methods=['POST'])
 def consoleCommand():
