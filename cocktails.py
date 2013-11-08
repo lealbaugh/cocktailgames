@@ -247,7 +247,7 @@ def consoleCommand():
 		announceCake()
 	elif command == "assignWords":
 		assignWords()
-	elif command == "endParty"
+	elif command == "endParty":
 		endParty()
 	return render_template("<a href=\"/leaconsole\">back</a>")
 
