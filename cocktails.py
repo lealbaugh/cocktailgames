@@ -30,8 +30,8 @@ transcript = database["transcript"]
 games = database["games"]
 
 
-#----------Function Defs-------------------
-
+#----------Function Defs-------------------------------------------
+# --------Helpers--------
 def lookup(collection, field, fieldvalue, response):
 	if response:
 		return collection.find({field:fieldvalue}, {response:1, "_id":0})[0][response] 
@@ -58,6 +58,17 @@ def numberOfPlayers():
 	return players.find({"active":"True"}, {"agentname":1, "_id":0}).count()
 
 
+# -----Game functions------
+def getAgentName(phonenumber, content):
+	# players.find for player, based on phone number
+	# return player agent name
+	if players.find({"phonenumber": phonenumber}).count() == 0:
+		agentname = newPlayer(phonenumber, content)
+	else:
+		agentname = lookup(collection=players, field="phonenumber", fieldvalue=phonenumber, response="agentname")
+	return agentname
+
+
 def newPlayer(phonenumber, content):
 	# generate agent name
 	# add name, agent, init points, etc to players collection
@@ -74,7 +85,8 @@ def newPlayer(phonenumber, content):
 	# random color from http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
 	name = content
 	# fiddle with this as well
-	affiliation = "HQ"
+	factionlist = lookup(games, "active", "True", "affiliations")
+	affiliation = factionlist[random.randint(0, len(factionlist)-1)]
 	#generate affiliation
 	players.insert({
 		"agentname": agentname,
@@ -93,36 +105,15 @@ def newPlayer(phonenumber, content):
 	return agentname
 
 
-def getAgentName(phonenumber, content):
-	# players.find for player, based on phone number
-	# return player agent name
-	if players.find({"phonenumber": phonenumber}).count() == 0:
-		agentname = newPlayer(phonenumber, content)
-	else:
-		agentname = lookup(collection=players, field="phonenumber", fieldvalue=phonenumber, response="agentname")
-	return agentname
-
-
 def greet(agentname):
-	sendToRecipient(content = "Hello, Agent "+agentname+"! Your skills will be vital to the success of this event. To abandon the event before its completion, txt \"end.\" Await further instruction.", recipient = agentname, sender = "HQ")
+	message = "Hello, Agent "+agentname+"! Your skills will be vital to the success of this event. To abandon the event before its completion, txt \"end.\" Await further instruction."
+	sendToRecipient(content = message, recipient = agentname, sender = "HQ")
 	return
-
-def assignWords(collection):
-	# set player's tasks to a list of words and send them intro message
-	wordlist = lookup(games, "active", "True", "wordlist")
-	for player in players.find({"active":"True"}, {"agentname":1, "task":1, "_id":0}):
-		word = wordlist[random.randint(0,len(worldlist)-1)]
-		wordlist.remove(word)
-		players.update({"agentname":player["agentname"]}, {"$set": {"task":word}})
-	games.update({"active":"True"}, {"$set":{"wordlist":wordlist}})
-	return
-	
-
 
 def retireAgent(agentname):
-	pass
-	# set player's Active to false and send goodbye message
-
+	players.update({"agentname":agentname}, {"$set": {"active":"False"}})
+	sendToRecipient(content = "Goodbye, Agent "+agentname+"!", recipient = agentname, sender = "HQ")
+	return
 
 def helpAgent(agentname):
 	print "helpmatch!"
@@ -162,6 +153,35 @@ def makeReport(reportingagent, report):
 	return
 
 
+# --------Game Events---------
+def assignWords():
+	# set player's tasks to a list of words and send them intro message
+	wordlist = lookup(games, "active", "True", "wordlist")
+	for player in players.find({"active":"True"}, {"agentname":1, "task":1, "_id":0}):
+		word = wordlist[random.randint(0,len(worldlist)-1)]
+		wordlist.remove(word)
+		agentname = player["agentname"]
+		players.update({"agentname":agentname}, {"$set": {"task":word}})
+		message = "Transmit code \""+word+"\" by unobtrusive insertion into conversation. Use code frequently to ensure reception by our agents, but avoid detection by enemies."
+		sendToRecipient(content = message, recipient = agentname, sender = "HQ")
+	games.update({"active":"True"}, {"$set":{"wordlist":wordlist}})
+	return
+	
+def announceCake():
+	message = "Rendezvous in dining room. Announce the identity of an enemy agent to earn cake."
+	for player in players.find({"active":"True"}, {"agentname":1, "_id":0}):
+		agentname = player["agentname"]
+		sendToRecipient(content = message, recipient = agentname, sender = "HQ")
+
+
+
+def endParty():
+	for player in players.find({"active":"True"}, {"agentname":1, "_id":0}):
+		retireAgent(player["agentname"])
+
+
+
+# ---------Game Logic!----------
 def gameLogic(agentname, content):
 	print "gamelogic!"
 # if the content begins with a number, route the content through to the other agent
@@ -190,22 +210,14 @@ def gameLogic(agentname, content):
 		textinput = re.sub("[^a-z\s]", "", textinput)
 		# convert input to lower, strip out punctuation and numbers
 		makeReport(agentname, textinput)
-
 	else:
 		print "didn't match"
-		pass
-
-# if the content is an intel word, figure out whose intel words they could be and answer with that
-# 
-# when the "assign words" trigger is pulled, each player is assigned two words to slip into a conversation
-# and warned that enemy agents are also using code words
-# 
-
-# 	
-	
+	return
 
 
-#----------App routing-------------------
+
+
+#----------App routing-------------------------------------------
 
 @app.route('/', methods=['GET'])
 def index():
@@ -220,14 +232,24 @@ def leaderboard():
 def console():
 	return render_template("console.html", information = transcript)
 
-@app.route('/leaconsole', methods=['POST'])
+@app.route('/leaconsole/sentmessage', methods=['POST'])
 def consoleSend():
 	agentname = request.form.get('To', None)
 	content = request.form.get('Body', "empty text?")
-	
 	sendToRecipient(content = content, recipient = agentname, sender = "HQ")
 
-	return render_template("console.html", information = transcript)
+	return render_template("<a href=\"/leaconsole\">back</a>")
+
+@app.route('/leaconsole/sentcommand', methods=['POST'])
+def consoleCommand():
+	command = request.form.get('Command', None)
+	if command == "announceCake":
+		announceCake()
+	elif command == "assignWords":
+		assignWords()
+	elif command == "endParty"
+		endParty()
+	return render_template("<a href=\"/leaconsole\">back</a>")
 
 
 @app.route('/twilio', methods=['POST'])
@@ -245,14 +267,14 @@ def incomingSMS():
 	return "Success"
 
 
-#----------Jinja filter-----------------
+#----------Jinja filter-------------------------------------------
 @app.template_filter('printtime')
 def timeToString(timestamp):
     return str(timestamp)[11:16]
 
 
 
-#-----------Run it!----------------------
+#-----------Run it!----------------------------------------------
 
 if __name__ == "__main__":
 	app.run(debug=debug)
