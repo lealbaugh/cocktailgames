@@ -212,7 +212,7 @@ def index():
 	return "Sekkrits"
 
 @app.route('/leaderboard', methods=['GET'])
-def console():
+def leaderboard():
 	game = lookup(games, "active", "True", "spuriousReports")
 	return render_template("leaderboard.html", players = players, game = game)
 
