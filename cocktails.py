@@ -249,7 +249,7 @@ def consoleCommand():
 		assignWords()
 	elif command == "endParty":
 		endParty()
-	return render_template("<a href=\"/leaconsole\">back</a>")
+	return "<a href=\"/leaconsole\">back</a>"
 
 
 @app.route('/twilio', methods=['POST'])
