@@ -8,11 +8,11 @@
 	</tr>
 {% for player in players.find() %}
 	<tr>
-		<td>{{ players.agentname }}</td>
-		<td>{{ players.successfulTransmits|length }}</td>
-		<td>{{ players.interceptedTransmits|length }}</td>
-		<td>{{ players.reportedEnemies|length }}</td>
-		<td>{{ players.spuriousReports|length }}</td>
+		<td>{{ player.agentname }}</td>
+		<td>{{ player.successfulTransmits|length }}</td>
+		<td>{{ player.interceptedTransmits|length }}</td>
+		<td>{{ player.reportedEnemies|length }}</td>
+		<td>{{ player.spuriousReports|length }}</td>
 	</tr>
 {% endfor %}
 </table>
