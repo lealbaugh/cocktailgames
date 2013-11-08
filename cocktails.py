@@ -158,7 +158,7 @@ def assignWords():
 	# set player's tasks to a list of words and send them intro message
 	wordlist = lookup(games, "active", "True", "wordlist")
 	for player in players.find({"active":"True"}, {"agentname":1, "task":1, "_id":0}):
-		word = wordlist[random.randint(0,len(worldlist)-1)]
+		word = wordlist[random.randint(0,len(wordlist)-1)]
 		wordlist.remove(word)
 		agentname = player["agentname"]
 		players.update({"agentname":agentname}, {"$set": {"task":word}})
