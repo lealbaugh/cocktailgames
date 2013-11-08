@@ -4,6 +4,7 @@
 		<td>Successful Transmits }}</td>
 		<td>Intercepted Transmits }}</td>
 		<td>Reported Enemies</td>
+		<td>Spurious Reports</td>
 	</tr>
 {% for player in players.find() %}
 	<tr>
@@ -11,6 +12,7 @@
 		<td>{{ players.successfulTransmits }}</td>
 		<td>{{ players.interceptedTransmits }}</td>
 		<td>{{ players.reportedEnemies }}</td>
+		<td>{{ players.spuriousReports }}</td>
 	</tr>
 {% endfor %}
 </table>

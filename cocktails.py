@@ -27,9 +27,8 @@ database = mongoclient[databasename]	#loads the assigned database
 # collection = database["phonenumber"] #loads or makes the collection, whichever should happen
 players = database["players"]
 transcript = database["transcript"]
+games = database["games"]
 
-
-wordlist = ["cephalod", "foobar", "cricket", "bamboozle", "pratfall", "dudgeon", "cantankerous", "lacuna", "philately", "numismatist"]
 
 #----------Function Defs-------------------
 
@@ -53,6 +52,7 @@ def sendToRecipient(content, recipient, sender="HQ"):
  	except twilio.TwilioRestException as e:
  		content = content+" with error: "+e
  		transcript.insert({"time":time, "sender":sender, "recipient":recipient, "content":content, "color":recipientcolor})
+ 	return
 
 def numberOfPlayers():
 	return players.find({"active":"True"}, {"agentname":1, "_id":0}).count()
@@ -74,15 +74,19 @@ def newPlayer(phonenumber, content):
 	# random color from http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
 	name = content
 	# fiddle with this as well
+	affiliation = "HQ"
+	#generate affiliation
 	players.insert({
 		"agentname": agentname,
-		"phonenumber": phonenumber
+		"phonenumber": phonenumber,
 		"printcolor": printcolor,
 		"active": True,
 		"task": [],
-		"successfulTransmits":0,
-		"interceptedTransmits":0,
-		"reportedEnemies":0,
+		"affiliation": affiliation,
+		"successfulTransmits":[],
+		"interceptedTransmits":[],
+		"reportedEnemies":[],
+		"spuriousReports":[],
 		"name": name,
 		})
 	greet(agentname)
@@ -101,22 +105,17 @@ def getAgentName(phonenumber, content):
 
 def greet(agentname):
 	sendToRecipient(content = "Hello, Agent "+agentname+"! Your skills will be vital to the success of this event. To abandon the event before its completion, txt \"end.\" Await further instruction.", recipient = agentname, sender = "HQ")
+	return
 
 def assignWords(collection):
 	# set player's tasks to a list of words and send them intro message
-	thisRoundWordlist = []
-	while len(thisRoundWordlist) < numberOfPlayers()*2:
-			word = wordlist[random.randint(0,len(wordlist)-1)]
-			if word not in thisRoundWordlist:
-				thisRoundWordlist.append(word)
-
-	for player in players.find({"active":"True"}, {"agentname":1, "tasks":1, "_id":0}):
-		newTasks = []
-		while len(newTasks)<3:
-			word = thisRoundWordlist[random.randint(0,len(thisRoundWordlist)-1)]
-			if word not in newTasks:
-				newTasks.append(word)
-		players.update({"agentname":player["agentname"]}, {"$set": {"tasks":newTasks}})
+	wordlist = lookup(games, "active", "True", "wordlist")
+	for player in players.find({"active":"True"}, {"agentname":1, "task":1, "_id":0}):
+		word = wordlist[random.randint(0,len(worldlist)-1)]
+		wordlist.remove(word)
+		players.update({"agentname":player["agentname"]}, {"$set": {"task":word}})
+	games.update({"active":"True"}, {"$set":{"wordlist":wordlist}})
+	return
 	
 
 
@@ -133,6 +132,34 @@ def helpAgent(agentname):
 	# if we are in reporting:
 	helptext = helptext+"To report a piece of intelligence, txt \"report: [the word]\""
 	sendToRecipient(content = helptext, recipient = agentname, sender = "HQ")	
+	return
+
+def makeReport(reportingagent, report):
+	reportingagentteam = lookup(players, "agentname", reportingagent, "affiliation")
+	for player in agentNamesAndTask:
+		if report == player["task"]:
+			reportedagent = player["agentname"]
+			reportedagentteam = player["affiliation"]
+			if reportedagent == reportingagent:
+				message = "Our records show that the only agent assigned to code \""+report+"\" is you."
+				sendToRecipient(content = message, recipient=reportedagent, sender = "HQ")
+				return
+			elif reportingagentteam == reportedagentteam:
+				players.update({"agentname":reportedagent}, {"$push":{"successfulTransmits":report}})
+				message = "Our Agent "+reportingagent+" has reported your successful transmission of the code \""+report+"\" -- good work!"
+				sendToRecipient(content = message, recipient=reportedagent, sender = "HQ")
+				return
+			else:
+				players.update({"agentname":reportingagent}, {"$push":{"reportedEnemies":reportedagent}})
+				players.update({"agentname":reportedagent}, {"$push":{"interceptedTransmits":report}})
+				message = "Sources have confirmed the reception of your code \""+report+"\" by enemy agent "+reportingagent+"! Be more careful."
+				sendToRecipient(content = message, recipient=reportedagent, sender = "HQ")
+				return
+	# if it turns out the report was spurious
+	games.update({"active":"True"}, {"$push":{"spuriousReports":report}})
+	players.update({"agentname":reportingagent}, {"$push":{"spuriousReports":report}})
+	sendToRecipient(content = "Our records do not show evidence of any such intelligence.", recipient=reportingagent, sender = "HQ")
+	return
 
 
 def gameLogic(agentname, content):
@@ -161,21 +188,8 @@ def gameLogic(agentname, content):
 		print "reportmatch!"
 		textinput = re.sub("report:\s*", "", content.lower())
 		textinput = re.sub("[^a-z\s]", "", textinput)
-		print "input: "+textinput
 		# convert input to lower, strip out punctuation and numbers
-		agentNamesAndTasks = players.find({"active":"True"}, {"agentname":1, "tasks":1, "_id":0}) 
-		print agentNamesAndTasks
-		potentialagents = []
-		for player in agentNamesAndTasks:
-			for word in player["tasks"]:
-				if word == textinput:
-					potentialagents.append(player["agentname"])
-		print potentialagents
-		if len(potentialagents) > 0:
-			message = "Our records show that the observed agent could be Agent "+" or Agent ".join(potentialagents)+"."
-		else:
-			message = "Our records do not show evidence of any such intelligence."
-		sendToRecipient(content = message, recipient=agentname, sender = "HQ")
+		makeReport(agentname, textinput)
 
 	else:
 		print "didn't match"
