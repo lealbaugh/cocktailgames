@@ -70,16 +70,6 @@ def getAgentName(phonenumber, content):
 
 
 def newPlayer(phonenumber, content):
-	# generate agent name
-	# add name, agent, init points, etc to players collection
-	if phonenumber == os.environ['DAVID_NUMBER']:
-		agentname = "0011"
-	if phonenumber == os.environ['ME']:
-		agentname = "Q"
-	else:
-		agentname = "0"+str(random.randint(10,99))
-		while players.find({"agentname": agentname}).count() > 0:
-			agentname = "0"+str(random.randint(10,99))
 	r = lambda: random.randint(0,255)
 	printcolor = '#%02X%02X%02X'%(r(),r(),r())
 	# random color from http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
@@ -88,6 +78,17 @@ def newPlayer(phonenumber, content):
 	factionlist = lookup(games, "active", "True", "affiliations")
 	affiliation = factionlist[random.randint(0, len(factionlist)-1)]
 	#generate affiliation
+	if phonenumber == os.environ['DAVID_NUMBER']:
+		agentname = "0011"
+	if phonenumber == mynumber:
+		agentname = "Q"
+		printcolor = '#008080'
+	else:
+		agentname = "0"+str(random.randint(10,99))
+		while players.find({"agentname": agentname}).count() > 0:
+			agentname = "0"+str(random.randint(10,99))
+	# generate agent name
+	# add name, agent, init points, etc to players collection
 	players.insert({
 		"agentname": agentname,
 		"phonenumber": phonenumber,
@@ -106,7 +107,7 @@ def newPlayer(phonenumber, content):
 
 
 def greet(agentname):
-	message = "Hello, Agent "+agentname+"! Your skills will be vital to the success of this event. To abandon the event before its completion, txt \"end.\" Await further instruction."
+	message = "Hello, Agent "+agentname+"! Your skills will be vital to the success of this event. To abandon the event before its completion, txt \"leaving.\" Await further instruction."
 	sendToRecipient(content = message, recipient = agentname, sender = "HQ")
 	return
 
@@ -201,9 +202,9 @@ def gameLogic(agentname, content):
 	print "gamelogic!"
 # if the content begins with a number, route the content through to the other agent
 	agentnamematch = re.match("\d{3,4}", content)
-	helpmatch = re.match("help", content)
+	helpmatch = re.match("help", content.lower())
 	reportmatch = re.match("report", content.lower())
-	endmatch = re.match("end", content.lower())
+	endmatch = re.match("leaving", content.lower())
 # if first word is digits of an agent name, forward the message
 	if agentnamematch:
 		print "agentnamematch!"
