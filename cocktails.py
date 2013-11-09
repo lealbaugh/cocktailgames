@@ -113,6 +113,7 @@ def greet(agentname):
 
 def retireAgent(agentname):
 	players.update({"agentname":agentname}, {"$set": {"active":"False"}})
+	print "updated player to inactive"
 	sendToRecipient(content = "Good work and goodbye, Agent "+agentname+"!", recipient = agentname, sender = "HQ")
 	return
 
@@ -205,6 +206,7 @@ def gameLogic(agentname, content):
 	helpmatch = re.match("help", content.lower())
 	reportmatch = re.match("report", content.lower())
 	endmatch = re.match("leaving", content.lower())
+	# hilariously, with the more natural-seeming "end," Twilio's own unsubscribe feature kicks in.
 # if first word is digits of an agent name, forward the message
 	if agentnamematch:
 		print "agentnamematch!"
@@ -220,6 +222,7 @@ def gameLogic(agentname, content):
 		helpAgent(agentname)
 # if "end"
 	elif endmatch:
+		print "endmatch"
 		retireAgent(agentname)
 # if the content is an intel word, figure out whose intel words they could be and answer with that
 	elif reportmatch:
