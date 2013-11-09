@@ -169,7 +169,7 @@ def assignWords():
 		agentname = player["agentname"]
 		players.update({"agentname":agentname}, {"$set": {"task":word}})
 		if player["knowsaboutmissions"] == "False":
-			message = "Mission: insert \""+word+"\" unobtrusively into conversation. Use code frequently to ensure reception by our agents, but avoid detection by enemies."
+			message = "Mission: insert code \""+word+"\" unobtrusively into conversation. Use code frequently to ensure reception by our agents, but avoid detection by enemies."
 			sendToRecipient(content = message, recipient = agentname, sender = "HQ")
 			message = "Enemy agents will be using similar tactics! Report friendly or hostile intelligence by txting \"Report: [the word]\""
 			sendToRecipient(content = message, recipient = agentname, sender = "HQ")
@@ -277,7 +277,7 @@ def consoleSend():
 @app.route('/leaconsole/sentcommand', methods=['POST'])
 def consoleCommand():
 	command = request.form.get('Command', None)
-	gameCommand("HQ", content)
+	gameCommand("HQ", command)
 	return "<a href=\"/leaconsole\">back</a>"
 
 
