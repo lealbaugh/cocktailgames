@@ -27,7 +27,7 @@
 			<td>{{ player.interceptedTransmits|length }}</td>
 			<td>{{ player.reportedEnemies|length }}</td>
 			<td>{{ player.spuriousReports|length }}</td>
-			<td>{{ player.task }}</td>
+			<td>{{ player.task|join[", "] }}</td>
 		</tr>
 	{% endfor %}
 	</table>

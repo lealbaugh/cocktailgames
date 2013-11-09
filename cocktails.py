@@ -134,24 +134,25 @@ def helpAgent(agentname):
 def makeReport(reportingagent, report):
 	reportingagentteam = lookup(players, "agentname", reportingagent, "affiliation")
 	for player in players.find({"active":"True"}, {"agentname":1, "affiliation":1, "task":1, "_id":0}):
-		if report == player["task"][-1]:
-			reportedagent = player["agentname"]
-			reportedagentteam = player["affiliation"]
-			if reportedagent == reportingagent:
-				message = "Our records show that the only agent assigned to code \""+report+"\" is you."
-				sendToRecipient(content = message, recipient=reportedagent, sender = "HQ")
-				return
-			elif reportingagentteam == reportedagentteam:
-				players.update({"agentname":reportedagent}, {"$push":{"successfulTransmits":report}})
-				message = "Our Agent "+reportingagent+" has reported your successful transmission of the code \""+report+"\" -- good work!"
-				sendToRecipient(content = message, recipient=reportedagent, sender = "HQ")
-				return
-			else:
-				players.update({"agentname":reportingagent}, {"$push":{"reportedEnemies":reportedagent}})
-				players.update({"agentname":reportedagent}, {"$push":{"interceptedTransmits":report}})
-				message = "Sources have confirmed the reception of your code \""+report+"\" by enemy agent "+reportingagent+"! Be more careful."
-				sendToRecipient(content = message, recipient=reportedagent, sender = "HQ")
-				return
+		if len(player["task"]>0):
+			if report == player["task"][-1]:
+				reportedagent = player["agentname"]
+				reportedagentteam = player["affiliation"]
+				if reportedagent == reportingagent:
+					message = "Our records show that the only agent assigned to code \""+report+"\" is you."
+					sendToRecipient(content = message, recipient=reportedagent, sender = "HQ")
+					return
+				elif reportingagentteam == reportedagentteam:
+					players.update({"agentname":reportedagent}, {"$push":{"successfulTransmits":report}})
+					message = "Our Agent "+reportingagent+" has reported your successful transmission of the code \""+report+"\" -- good work!"
+					sendToRecipient(content = message, recipient=reportedagent, sender = "HQ")
+					return
+				else:
+					players.update({"agentname":reportingagent}, {"$push":{"reportedEnemies":reportedagent}})
+					players.update({"agentname":reportedagent}, {"$push":{"interceptedTransmits":report}})
+					message = "Sources have confirmed the reception of your code \""+report+"\" by enemy agent "+reportingagent+"! Be more careful."
+					sendToRecipient(content = message, recipient=reportedagent, sender = "HQ")
+					return
 	# if it turns out the report was spurious
 	games.update({"active":"True"}, {"$push":{"spuriousReports":report}})
 	players.update({"agentname":reportingagent}, {"$push":{"spuriousReports":report}})
