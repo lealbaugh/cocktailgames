@@ -112,7 +112,7 @@ def greet(agentname):
 
 def retireAgent(agentname):
 	players.update({"agentname":agentname}, {"$set": {"active":"False"}})
-	sendToRecipient(content = "Goodbye, Agent "+agentname+"!", recipient = agentname, sender = "HQ")
+	sendToRecipient(content = "Good work and goodbye, Agent "+agentname+"!", recipient = agentname, sender = "HQ")
 	return
 
 def helpAgent(agentname):
@@ -214,8 +214,10 @@ def gameLogic(agentname, content):
 			content = re.sub("\d{3,4}", "From "+agentname, content)
 			sendToRecipient(content = content, recipient = recipient, sender = agentname)
 			print "Direct message to "+recipient+": "+content
+# if "help"
 	elif helpmatch:
 		helpAgent(agentname)
+# if "end"
 	elif endmatch:
 		retireAgent(agentname)
 # if the content is an intel word, figure out whose intel words they could be and answer with that
@@ -229,6 +231,17 @@ def gameLogic(agentname, content):
 		print "didn't match"
 	return
 
+def gameCommand(agentname, content):
+	if command == "announce cake":
+		announceCake()
+	elif command == "assign words":
+		assignWords()
+	elif command == "end party":
+		endParty()
+	elif command == "teach messaging":
+		teachMessaging()
+	elif agentname != "HQ":
+		gameLogic(agentname,content)
 
 
 
@@ -258,14 +271,7 @@ def consoleSend():
 @app.route('/leaconsole/sentcommand', methods=['POST'])
 def consoleCommand():
 	command = request.form.get('Command', None)
-	if command == "announceCake":
-		announceCake()
-	elif command == "assignWords":
-		assignWords()
-	elif command == "endParty":
-		endParty()
-	elif command == "teachMessaging":
-		teachMessaging()
+	gameCommand("HQ", content)
 	return "<a href=\"/leaconsole\">back</a>"
 
 
@@ -278,7 +284,11 @@ def incomingSMS():
 	time = datetime.datetime.now()
 	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":agentcolor})
 
-	gameLogic(agentname, content)
+	if agentname == lookup(games, "active", "True", bootsontheground):
+		gameCommand(agentname, content)
+
+	else:
+		gameLogic(agentname, content)
 
 
 	return "Success"
