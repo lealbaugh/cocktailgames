@@ -20,6 +20,6 @@
 	{% endfor %}
 	</table>
 	<hr>
-	Spurious reports:<br> {{ game.spuriousReports }}
+	Spurious reports:<br> {% for item in game.spuriousReports %}{{ item }}{% endfor %}
 </body>
 </html>

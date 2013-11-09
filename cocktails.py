@@ -117,11 +117,11 @@ def retireAgent(agentname):
 
 def helpAgent(agentname):
 	print "helpmatch!"
-	helptext = ""
-	# if we are in directmessaging:
-	helptext = helptext+"To message another agent, use \"[their number]: [message]\"\n"
-	# if we are in reporting:
-	helptext = helptext+"To report a piece of intelligence, txt \"report: [the word]\""
+	helptext = "Stand by."
+	if lookup(games, "active", "True", "wordsassigned") == "True":
+		helptext = "To report a piece of intelligence, txt \"report: [the word]\""
+	if lookup(games, "active", "True", "directmessaging") == "True":
+		helptext = "To message another agent, use \"[their number]: [message]\"\n"+helptext
 	sendToRecipient(content = helptext, recipient = agentname, sender = "HQ")	
 	return
 
@@ -155,6 +155,9 @@ def makeReport(reportingagent, report):
 
 # --------Game Events---------
 def assignWords():
+	announceRules = False
+	if lookup(games, "active", "True", "wordsassigned") == "False":
+		announceRules = True
 	# set player's tasks to a list of words and send them intro message
 	wordlist = lookup(games, "active", "True", "wordlist")
 	for player in players.find({"active":"True"}, {"agentname":1, "task":1, "_id":0}):
@@ -162,9 +165,16 @@ def assignWords():
 		wordlist.remove(word)
 		agentname = player["agentname"]
 		players.update({"agentname":agentname}, {"$set": {"task":word}})
-		message = "Transmit code \""+word+"\" by unobtrusive insertion into conversation. Use code frequently to ensure reception by our agents, but avoid detection by enemies."
-		sendToRecipient(content = message, recipient = agentname, sender = "HQ")
+		if announceRules:
+			message = "Mission: insert \""+word+"\" unobtrusively into conversation. Use code frequently to ensure reception by our agents, but avoid detection by enemies."
+			sendToRecipient(content = message, recipient = agentname, sender = "HQ")
+			message = "Enemy agents will be using similar tactics! Report friendly or hostile intelligence by txting \"Report: [the word]\""
+			sendToRecipient(content = message, recipient = agentname, sender = "HQ")
+		else:
+			message = "Your new code is: \""+word+".\" Cease using outdated codes."
+			sendToRecipient(content = message, recipient = agentname, sender = "HQ")
 	games.update({"active":"True"}, {"$set":{"wordlist":wordlist}})
+	games.update({"active":"True"}, {"$set":{"wordsassigned":"True"}})
 	return
 	
 def announceCake():
@@ -173,7 +183,12 @@ def announceCake():
 		agentname = player["agentname"]
 		sendToRecipient(content = message, recipient = agentname, sender = "HQ")
 
-
+def teachMessaging():
+	message = "To send a message any other agent (friend or enemy), use \"[their number]: [message]\""
+	for player in players.find({"active":"True"}, {"agentname":1, "_id":0}):
+		agentname = player["agentname"]
+		sendToRecipient(content = message, recipient = agentname, sender = "HQ")
+	games.update({"active":"True"}, {"$set":{"directmessaging":"True"}})
 
 def endParty():
 	for player in players.find({"active":"True"}, {"agentname":1, "_id":0}):
@@ -249,6 +264,8 @@ def consoleCommand():
 		assignWords()
 	elif command == "endParty":
 		endParty()
+	elif command == "teachMessaging":
+		teachMessaging()
 	return "<a href=\"/leaconsole\">back</a>"
 
 
