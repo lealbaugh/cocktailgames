@@ -288,7 +288,7 @@ def incomingSMS():
 	time = datetime.datetime.now()
 	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":agentcolor})
 
-	if agentname == lookup(games, "active", "True", "bootsontheground"):
+	if False:#agentname == lookup(games, "active", "True", "bootsontheground"):
 		gameCommand(agentname, content)
 
 	else:
