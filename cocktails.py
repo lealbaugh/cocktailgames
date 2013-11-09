@@ -188,6 +188,11 @@ def announceCake():
 		agentname = player["agentname"]
 		sendToRecipient(content = message, recipient = agentname, sender = "HQ")
 
+def announce(announcement):
+	for player in players.find({"active":"True"}, {"agentname":1, "_id":0}):
+		agentname = player["agentname"]
+		sendToRecipient(content = announcement, recipient = agentname, sender = "HQ")
+
 def teachMessaging():
 	message = "To send a message any other agent (friend or enemy), use \"[their number]: [message]\""
 	for player in players.find({"active":"True"}, {"agentname":1, "_id":0}):
@@ -281,6 +286,13 @@ def consoleSend():
 def consoleCommand():
 	command = request.form.get('Command', None)
 	gameCommand("HQ", command)
+	return "<a href=\"/leaconsole\">back</a>"
+
+
+@app.route('/leaconsole/sentannouncement', methods=['POST'])
+def consoleAnnounce():
+	announcement = request.form.get('Announcement', None)
+	announce(announcement)
 	return "<a href=\"/leaconsole\">back</a>"
 
 
