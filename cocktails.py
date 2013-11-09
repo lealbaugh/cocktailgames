@@ -239,8 +239,10 @@ def gameLogic(agentname, content):
 
 def gameCommand(agentname, command):
 	if command == "announce cake":
+		print "announcing cake"
 		announceCake()
 	elif command == "assign words":
+		print "assigning words"
 		assignWords()
 	elif command == "end party":
 		endParty()
