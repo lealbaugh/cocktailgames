@@ -102,7 +102,8 @@ def newPlayer(phonenumber, content):
 		"reportedEnemies":[],
 		"spuriousReports":[],
 		"name": name,
-		"knowsaboutmissions":"False"
+		"knowsaboutmissions":"False",
+		"squelchgamelogic":"True"
 		})
 	greet(agentname)
 	return agentname
@@ -188,7 +189,7 @@ def announceCake():
 		agentname = player["agentname"]
 		sendToRecipient(content = message, recipient = agentname, sender = "HQ")
 
-def announce(announcement):
+def announce(announcementherokuuuuuu):
 	for player in players.find({"active":"True"}, {"agentname":1, "_id":0}):
 		agentname = player["agentname"]
 		sendToRecipient(content = announcement, recipient = agentname, sender = "HQ")
@@ -209,6 +210,9 @@ def endParty():
 # ---------Game Logic!----------
 def gameLogic(agentname, content):
 	print "gamelogic!"
+	if lookup(players, "agentname", agentname, "squelchgamelogic") == "True":
+		games.update({"agentname":agentname}, {"$set":{"squelchgamelogic":"False"}})
+		return
 # if the content begins with a number, route the content through to the other agent
 	agentnamematch = re.match("\d{3,4}", content)
 	helpmatch = re.match("help", content.lower())
