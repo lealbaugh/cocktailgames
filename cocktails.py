@@ -30,7 +30,7 @@ transcript = database["transcript"]
 games = database["games"]
 
 
-#----------Function Defs-------------------------------------------
+# ----------Function Defs-------------------------------------------
 # --------Helpers--------
 def lookup(collection, field, fieldvalue, response):
 	if response:
@@ -78,8 +78,6 @@ def newPlayer(phonenumber, content):
 	factionlist = lookup(games, "active", "True", "affiliations")
 	affiliation = factionlist[random.randint(0, len(factionlist)-1)]
 	#generate affiliation
-	if phonenumber == os.environ['DAVID_NUMBER']:
-		agentname = "0011"
 	if phonenumber == mynumber:
 		agentname = "Q"
 		printcolor = '#008080'
@@ -87,6 +85,9 @@ def newPlayer(phonenumber, content):
 		agentname = "0"+str(random.randint(10,99))
 		while players.find({"agentname": agentname}).count() > 0:
 			agentname = "0"+str(random.randint(10,99))
+		if phonenumber == os.environ['DAVID_NUMBER']:
+			birthdaymessage = os.environ['BIRTHDAY_MESSAGE']
+			sendToRecipient(content = birthdaymessage, recipient = agentname, sender = "Q")
 	# generate agent name
 	# add name, agent, init points, etc to players collection
 	players.insert({
@@ -101,6 +102,7 @@ def newPlayer(phonenumber, content):
 		"reportedEnemies":[],
 		"spuriousReports":[],
 		"name": name,
+		"knowsaboutmissions":"False"
 		})
 	greet(agentname)
 	return agentname
@@ -119,8 +121,10 @@ def retireAgent(agentname):
 
 def helpAgent(agentname):
 	print "helpmatch!"
-	helptext = "Stand by."
-	if lookup(games, "active", "True", "wordsassigned") == "True":
+	helptext = ""
+	if lookup(players, "agentname", agentname, "knowsaboutmissions") == "False":
+		helptext = "Stand by."
+	else:
 		helptext = "To report a piece of intelligence, txt \"report: [the word]\""
 	if lookup(games, "active", "True", "directmessaging") == "True":
 		helptext = "To message another agent, use \"[their number]: [message]\"\n"+helptext
@@ -157,9 +161,6 @@ def makeReport(reportingagent, report):
 
 # --------Game Events---------
 def assignWords():
-	announceRules = False
-	if lookup(games, "active", "True", "wordsassigned") == "False":
-		announceRules = True
 	# set player's tasks to a list of words and send them intro message
 	wordlist = lookup(games, "active", "True", "wordlist")
 	for player in players.find({"active":"True"}, {"agentname":1, "task":1, "_id":0}):
@@ -167,11 +168,12 @@ def assignWords():
 		wordlist.remove(word)
 		agentname = player["agentname"]
 		players.update({"agentname":agentname}, {"$set": {"task":word}})
-		if announceRules:
+		if player["knowsaboutmissions"] == "False":
 			message = "Mission: insert \""+word+"\" unobtrusively into conversation. Use code frequently to ensure reception by our agents, but avoid detection by enemies."
 			sendToRecipient(content = message, recipient = agentname, sender = "HQ")
 			message = "Enemy agents will be using similar tactics! Report friendly or hostile intelligence by txting \"Report: [the word]\""
 			sendToRecipient(content = message, recipient = agentname, sender = "HQ")
+			players.update({"agentname":player["agentname"]}, {"$set":{"knowsaboutmissions":"True"}})
 		else:
 			message = "Your new code is: \""+word+".\" Cease using outdated codes."
 			sendToRecipient(content = message, recipient = agentname, sender = "HQ")
@@ -232,7 +234,7 @@ def gameLogic(agentname, content):
 		# convert input to lower, strip out punctuation and numbers
 		makeReport(agentname, textinput)
 	else:
-		print "didn't match"
+		helpAgent(agentname)
 	return
 
 def gameCommand(agentname, command):
