@@ -235,7 +235,7 @@ def gameLogic(agentname, content):
 		print "didn't match"
 	return
 
-def gameCommand(agentname, content):
+def gameCommand(agentname, command):
 	if command == "announce cake":
 		announceCake()
 	elif command == "assign words":
@@ -288,7 +288,7 @@ def incomingSMS():
 	time = datetime.datetime.now()
 	transcript.insert({"time":time, "sender":agentname, "recipient":"HQ", "content":content, "color":agentcolor})
 
-	if False:#agentname == lookup(games, "active", "True", "bootsontheground"):
+	if agentname == lookup(games, "active", "True", "bootsontheground"):
 		gameCommand(agentname, content)
 
 	else:
