@@ -18,6 +18,7 @@
 			<td>Intercepted Transmits</td>
 			<td>Reported Enemies</td>
 			<td>Spurious Reports</td>
+			<td>Assigned Words</td>
 		</tr>
 	{% for player in players.find() %}
 		<tr>
@@ -26,6 +27,7 @@
 			<td>{{ player.interceptedTransmits|length }}</td>
 			<td>{{ player.reportedEnemies|length }}</td>
 			<td>{{ player.spuriousReports|length }}</td>
+			<td>{{ player.task }}</td>
 		</tr>
 	{% endfor %}
 	</table>
