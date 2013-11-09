@@ -92,7 +92,7 @@ def newPlayer(phonenumber, content):
 		"agentname": agentname,
 		"phonenumber": phonenumber,
 		"printcolor": printcolor,
-		"active": True,
+		"active": "True",
 		"task": [],
 		"affiliation": affiliation,
 		"successfulTransmits":[],
@@ -127,7 +127,7 @@ def helpAgent(agentname):
 
 def makeReport(reportingagent, report):
 	reportingagentteam = lookup(players, "agentname", reportingagent, "affiliation")
-	for player in agentNamesAndTask:
+	for player in players.find({"active":"True"}, {"agentname":1, "affiliation":1, "task":1, "_id":0}):
 		if report == player["task"]:
 			reportedagent = player["agentname"]
 			reportedagentteam = player["affiliation"]
