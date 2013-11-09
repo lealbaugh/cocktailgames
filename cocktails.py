@@ -295,8 +295,8 @@ def incomingSMS():
 
 	else:
 		gameLogic(agentname, content)
-		
-	return
+
+	return "Success!"
 
 
 #----------Jinja filter-------------------------------------------
