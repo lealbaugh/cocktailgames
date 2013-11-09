@@ -245,7 +245,7 @@ def gameCommand(agentname, command):
 	elif command == "teach messaging":
 		teachMessaging()
 	elif agentname != "HQ":
-		gameLogic(agentname,content)
+		gameLogic(agentname,command)
 
 
 
