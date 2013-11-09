@@ -134,7 +134,7 @@ def helpAgent(agentname):
 def makeReport(reportingagent, report):
 	reportingagentteam = lookup(players, "agentname", reportingagent, "affiliation")
 	for player in players.find({"active":"True"}, {"agentname":1, "affiliation":1, "task":1, "_id":0}):
-		if report == player["task"]:
+		if report == player["task"][-1]:
 			reportedagent = player["agentname"]
 			reportedagentteam = player["affiliation"]
 			if reportedagent == reportingagent:
@@ -167,7 +167,7 @@ def assignWords():
 		word = wordlist[random.randint(0,len(wordlist)-1)]
 		wordlist.remove(word)
 		agentname = player["agentname"]
-		players.update({"agentname":agentname}, {"$set": {"task":word}})
+		players.update({"agentname":agentname}, {"$push": {"task":word}})
 		if player["knowsaboutmissions"] == "False":
 			message = "Mission: insert code \""+word+"\" unobtrusively into conversation. Use code frequently to ensure reception by our agents, but avoid detection by enemies."
 			sendToRecipient(content = message, recipient = agentname, sender = "HQ")
