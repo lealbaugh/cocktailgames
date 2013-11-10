@@ -191,7 +191,7 @@ def announceCake():
 		agentname = player["agentname"]
 		sendToRecipient(content = message, recipient = agentname, sender = "HQ")
 
-def announce(announcementherokuuuuuu):
+def announce(announcement):
 	for player in players.find({"active":"True"}, {"agentname":1, "_id":0}):
 		agentname = player["agentname"]
 		sendToRecipient(content = announcement, recipient = agentname, sender = "HQ")
