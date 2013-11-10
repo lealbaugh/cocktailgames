@@ -87,9 +87,6 @@ def newPlayer(phonenumber, content):
 		agentname = "0"+str(random.randint(10,99))
 		while players.find({"agentname": agentname}).count() > 0:
 			agentname = "0"+str(random.randint(10,99))
-		if phonenumber == os.environ['DAVID_NUMBER']:
-			birthdaymessage = os.environ['BIRTHDAY_MESSAGE']
-			sendToRecipient(content = birthdaymessage, recipient = agentname, sender = "Q")
 	# generate agent name
 	# add name, agent, init points, etc to players collection
 	players.insert({
@@ -108,6 +105,9 @@ def newPlayer(phonenumber, content):
 		"squelchgamelogic":"True"
 		})
 	greet(agentname)
+	if phonenumber == os.environ['DAVID_NUMBER']:
+			birthdaymessage = os.environ['BIRTHDAY_MESSAGE']
+			sendToRecipient(content = birthdaymessage, recipient = agentname, sender = "Q")
 	return agentname
 
 
