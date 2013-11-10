@@ -123,6 +123,7 @@ def retireAgent(agentname):
 	return
 
 def helpAgent(agentname):
+	pass
 	print "helpmatch!"
 	helptext = ""
 	if lookup(players, "agentname", agentname, "knowsaboutmissions") == "False":
