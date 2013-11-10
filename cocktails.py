@@ -211,7 +211,7 @@ def endParty():
 def gameLogic(agentname, content):
 	print "gamelogic!"
 	if lookup(players, "agentname", agentname, "squelchgamelogic") == "True":
-		games.update({"agentname":agentname}, {"$set":{"squelchgamelogic":"False"}})
+		players.update({"agentname":agentname}, {"$set":{"squelchgamelogic":"False"}})
 		return
 # if the content begins with a number, route the content through to the other agent
 	agentnamematch = re.match("\d{3,4}", content)
