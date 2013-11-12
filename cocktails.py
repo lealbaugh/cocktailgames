@@ -35,18 +35,15 @@ games = database["games"]
 # ----------Function Defs-------------------------------------------
 # --------Helpers--------
 def lookup(collection, field, fieldvalue, response):
-	if response:
-		return collection.find({field:fieldvalue}, {response:1, "_id":0})[0][response] 
-	else:
-		return collection.find({field:fieldvalue})
+	return collection.find({field:fieldvalue}, {response:1, "_id":0})[0][response] 
+	# "find" returns an array of objects; the first one ought to be the one we want
+	# (if more than one thing is possible, look it up manually)
 
 def sendToRecipient(content, recipient, sender="HQ"):
 	recipientnumber = lookup(collection=players, field="agentname", fieldvalue=recipient, response="phonenumber")
 	recipientcolor = lookup(collection=players, field="agentname", fieldvalue=recipient, response="printcolor")
-	# recipientnumber = players.find({"agentname":recipient}, {"phonenumber":1, "_id":0})[0]["phonenumber"] 
-	#theory: "find" returns an array of objects; the first one ought to be the one we want
 	sendernumber = twilionumber
-	time = datetime.datetime.now() #function here to return time
+	time = datetime.datetime.now()
 	
 	try:
 		message = twilioclient.sms.messages.create(body=content, to=recipientnumber, from_=twilionumber)
@@ -62,8 +59,6 @@ def numberOfPlayers():
 
 # -----Game functions------
 def getAgentName(phonenumber, content):
-	# players.find for player, based on phone number
-	# return player agent name
 	if players.find({"phonenumber": phonenumber}).count() == 0:
 		agentname = newPlayer(phonenumber, content)
 	else:
@@ -76,10 +71,9 @@ def newPlayer(phonenumber, content):
 	printcolor = '#%02X%02X%02X'%(r(),r(),r())
 	# random color from http://stackoverflow.com/questions/13998901/generating-a-random-hex-color-in-python
 	name = content
-	# fiddle with this as well
+	# this is just for the sake of the gamemaster
 	factionlist = lookup(games, "active", "True", "affiliations")
 	affiliation = factionlist[random.randint(0, len(factionlist)-1)]
-	#generate affiliation
 	if phonenumber == mynumber:
 		agentname = "Q"
 		printcolor = '#008080'
@@ -87,8 +81,6 @@ def newPlayer(phonenumber, content):
 		agentname = "0"+str(random.randint(10,99))
 		while players.find({"agentname": agentname}).count() > 0:
 			agentname = "0"+str(random.randint(10,99))
-	# generate agent name
-	# add name, agent, init points, etc to players collection
 	players.insert({
 		"agentname": agentname,
 		"phonenumber": phonenumber,
@@ -105,6 +97,7 @@ def newPlayer(phonenumber, content):
 		"squelchgamelogic":"True"
 		})
 	greet(agentname)
+	# and if it's David, send a birthday message
 	if phonenumber == os.environ['DAVID_NUMBER']:
 			birthdaymessage = os.environ['BIRTHDAY_MESSAGE']
 			sendToRecipient(content = birthdaymessage, recipient = agentname, sender = "Q")
@@ -123,7 +116,6 @@ def retireAgent(agentname):
 	return
 
 def helpAgent(agentname):
-	pass
 	print "helpmatch!"
 	helptext = ""
 	if lookup(players, "agentname", agentname, "knowsaboutmissions") == "False":
@@ -134,6 +126,7 @@ def helpAgent(agentname):
 		helptext = "To message another agent, use \"[their number]: [message]\"\n"+helptext
 	sendToRecipient(content = helptext, recipient = agentname, sender = "HQ")	
 	return
+# this helptext is known obnoxious, and should be fixed before future runs of the game
 
 def makeReport(reportingagent, report):
 	reportingagentteam = lookup(players, "agentname", reportingagent, "affiliation")
@@ -229,7 +222,8 @@ def gameLogic(agentname, content):
 		if players.find({"agentname": recipient}).count() == 0:
 			sendToRecipient(content = "There is no such agent.", recipient = agentname, sender = "HQ")
 		else:
-			content = re.sub("\d{3,4}", "From "+agentname, content)
+			content = re.sub("\d{3,4}", "From "+agentname, content, 1)
+			# only replace the first one! ._.
 			sendToRecipient(content = content, recipient = recipient, sender = agentname)
 			print "Direct message to "+recipient+": "+content
 # if "help"
@@ -242,7 +236,8 @@ def gameLogic(agentname, content):
 # if the content is an intel word, figure out whose intel words they could be and answer with that
 	elif reportmatch:
 		print "reportmatch!"
-		textinput = re.sub("report:\s*", "", content.lower())
+		textinput = re.sub("report:*\s*", "", content.lower())
+		# make the colon unnecessary
 		textinput = re.sub("[^a-z\s]", "", textinput)
 		# convert input to lower, strip out punctuation and numbers
 		makeReport(agentname, textinput)
